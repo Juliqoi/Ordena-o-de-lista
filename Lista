@@ -1,0 +1,295 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct No {
+    int inicio;
+    struct No* proximo;
+} No;
+
+// Protótipos das funções
+void exibirMenu();
+int conferirOrdenacao(No* lista);
+void inserirNoinicio(No** lista, int valor);
+void inserirInteiro(No** lista, int valor);
+void ordenarLista(No** lista);
+int buscarInteiro(No* lista, int valor);
+void removerInteiro(No** lista, int valor);
+void exibirLista(No* lista);
+void inserirNoFinal(No** lista, int valor);
+
+// Função principal
+int main() {
+    No* lista = NULL;
+    int opcao, valor;
+    int x, y;
+
+    do {
+        printf("Digite um número inteiro para adicionar à lista: ");
+        scanf("%d", &valor);
+        inserirNoFinal(&lista, valor);
+
+        printf("Deseja adicionar mais um número? (1 - Sim, 0 - Não): ");
+        scanf("%d", &x);
+        printf("\n");
+    } while (x != 0);
+
+    do {
+        exibirMenu();
+        printf("Digite a opção desejada: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                if (conferirOrdenacao(lista)) {
+                    printf("A lista esta ordenada.\n");
+                } else {
+                    printf("A lista nao esta ordenada.\n");
+                }
+                break;
+            case 2:
+                int controle;
+                if (conferirOrdenacao(lista)) {
+                    printf("A lista esta ordenada.\n");
+                    printf("Deseja manter a ordenação? 1. Sim 0. Não\n");
+                    scanf("%d", &controle);
+                    if(controle == 1){
+                        printf("Digite o valor a ser inserido: \n");
+                        scanf("%d", &valor);
+                        inserirInteiro(&lista, valor);
+                        break;
+                    } else if (controle == 0){
+                        printf("A lista nao esta ordenada.\n");
+                        printf("Deseja inserir no inicio ou no fim da lista? 1.Incicio 2.Fim\n");
+                        scanf("%d",&y);
+                        if(y==1){
+                            printf("Digite o valor a ser inserido: \n");
+                            scanf("%d", &valor);
+                            inserirNoinicio(&lista, valor);
+                            break;
+                        
+                        } else if(y==2){
+                            printf("Digite o valor a ser inserido: \n");
+                            scanf("%d", &valor);
+                            inserirNoFinal(&lista, valor);
+                            break;
+                        }
+                        }
+                } else {
+                    printf("A lista nao esta ordenada.\n");
+                    printf("Deseja inserir no inicio ou no fim da lista? 1.Incicio 2.Fim\n");
+                    scanf("%d",&y);
+                    if(y==1){
+                         printf("Digite o valor a ser inserido: \n");
+                         scanf("%d", &valor);
+                         inserirNoinicio(&lista, valor);
+                         break;
+                    } else if(y==2){
+                        printf("Digite o valor a ser inserido: \n");
+                        scanf("%d", &valor);
+                        inserirNoFinal(&lista, valor);
+                        break;
+                    }
+                    
+                }
+            case 3:
+                ordenarLista(&lista);
+                break;
+            case 4:
+                printf("Digite o valor a ser buscado: ");
+                scanf("%d", &valor);
+                int resultado = buscarInteiro(lista, valor);
+                if (resultado != -1) {
+                    printf("O valor %d está presente na lista, na posição %d.\n", valor,resultado);
+                } else {
+                    printf("O valor %d não está presente na lista.\n", valor);
+                }
+                break;
+            case 5:
+                printf("Digite o valor a ser removido: ");
+                scanf("%d", &valor);
+                removerInteiro(&lista, valor);
+                break;
+            case 6:
+                exibirLista(lista);
+                break;
+            case 0:
+                printf("Encerrando o programa.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+
+        printf("\n");
+    } while (opcao != 0);
+
+    return 0;
+}
+
+// Função para exibir o menu
+void exibirMenu() {
+    printf("MENU\n");
+    printf("1. Conferir se a lista está ordenada\n");
+    printf("2. Inserir um inteiro\n");
+    printf("3. Ordenar a lista\n");
+    printf("4. Buscar um inteiro\n");
+    printf("5. Remover um inteiro\n");
+    printf("6. Exibir a lista\n");
+    printf("0. Sair\n");
+}
+//void para inserir o numero no inicio da lista
+void inserirNoinicio(No** lista, int valor){
+    No* novo_No = (No*)malloc(sizeof(No));
+    novo_No->inicio = valor;
+    novo_No->proximo = *lista;
+    *lista = novo_No;
+}
+//função para inserir o numero no final da lista
+void inserirNoFinal(No** lista, int valor) {
+    No* novo_No = (No*)malloc(sizeof(No));
+    novo_No->inicio = valor;
+    novo_No->proximo = NULL;
+
+    if (*lista == NULL) {
+        *lista = novo_No;
+        return;
+    }
+
+    No* aux = *lista;
+    while (aux->proximo != NULL) {
+        aux = aux->proximo;
+    }
+
+    aux->proximo = novo_No;
+}
+
+// Função para conferir se a lista está ordenada
+int conferirOrdenacao(No* lista) {
+    No* aux = lista;
+
+    while (aux != NULL && aux->proximo != NULL) {
+        if (aux->inicio > aux->proximo->inicio) {
+            return 0; // A lista não está ordenada
+        }
+        aux = aux->proximo;
+    }
+
+    return 1; // A lista está ordenada
+}
+
+// Função para inserir um inteiro na lista
+void inserirInteiro(No** lista, int valor) {
+    No* novo_No = (No*)malloc(sizeof(No));
+    novo_No->inicio = valor;
+    novo_No->proximo = NULL;
+
+    if (*lista == NULL) {
+        *lista = novo_No;
+        return;
+    }
+No* aux = *lista;
+    while (aux->proximo != NULL) {
+        if (aux->proximo->inicio < valor) {
+            aux = aux->proximo;
+        } else {
+            break;
+        }
+    }
+
+    if (aux->inicio <= valor) {
+        novo_No->proximo = aux->proximo;
+        aux->proximo = novo_No;
+    } else {
+        novo_No->proximo = *lista;
+        *lista = novo_No;
+    }
+}
+
+
+// Função para ordenar a lista
+void ordenarLista(No** lista) {
+    if (*lista == NULL || (*lista)->proximo == NULL) {
+        printf("A lista está vazia ou possui apenas um elemento.\n");
+        return;
+    }
+
+    No* lista_ordenada = NULL;
+    No* aux = *lista;
+    while (aux != NULL) {
+        No* proximo_No = aux->proximo;
+        if (lista_ordenada == NULL || aux->inicio < lista_ordenada->inicio) {
+            aux->proximo = lista_ordenada;
+            lista_ordenada = aux;
+        } else {
+            No* aux_ordenado = lista_ordenada;
+            while (aux_ordenado->proximo != NULL && aux->inicio > aux_ordenado->proximo->inicio) {
+                aux_ordenado = aux_ordenado->proximo;
+            }
+            aux->proximo = aux_ordenado->proximo;
+            aux_ordenado->proximo = aux;
+        }
+        aux = proximo_No;
+    }
+
+    *lista = lista_ordenada;
+    printf("A lista foi ordenada.\n");
+}
+
+// Função para buscar um inteiro na lista
+int buscarInteiro(No* lista, int valor) {
+    No* aux = lista;
+    int posicao = 1;
+
+    while (aux != NULL) {
+        if (aux->inicio == valor) {
+            return posicao;
+        }
+        aux = aux->proximo;
+        posicao++;
+    }
+
+    return -1; // Número não encontrado na lista
+}
+
+
+// Função para remover um inteiro da lista
+void removerInteiro(No** lista, int valor) {
+    if (*lista == NULL) {
+        printf("A lista está vazia.\n");
+        return;
+    }
+
+    No* aux = *lista;
+    No* anterior = NULL;
+    while (aux != NULL) {
+        if (aux->inicio == valor) {
+            if (anterior == NULL) {
+                *lista = aux->proximo;
+            } else {
+                anterior->proximo = aux->proximo;
+            }
+            free(aux);
+            printf("Valor %d removido da lista.\n", valor);
+            return;
+        }
+        anterior = aux;
+        aux = aux->proximo;
+    }
+
+    printf("O valor %d não está contido na lista.\n", valor);
+}
+
+// Função para exibir a lista
+void exibirLista(No* lista) {
+    if (lista == NULL) {
+        printf("A lista está vazia.\n");
+        return;
+    }
+
+    printf("Lista: ");
+    No* aux = lista;
+    while (aux != NULL) {
+        printf("%d ", aux->inicio);
+        aux = aux->proximo;
+    }
+    printf("\n");
+}
